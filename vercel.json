@@ -18,8 +18,11 @@
       "destination": "backend/api/index.py"
     },
     {
+      "handle": "filesystem"
+    },
+    {
       "source": "/(.*)",
-      "destination": "frontend/$1"
+      "destination": "frontend/index.html"
     }
   ]
 }

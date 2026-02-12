@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-from config import PORT
+from config import PORT, FRONTEND_BASE_URL
 from database import init_db
 from routes import router
 
@@ -15,9 +15,16 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="payme", version="1.0.0", lifespan=lifespan)
 
+# Restrict CORS for security
+origins = [
+    FRONTEND_BASE_URL,
+    "http://localhost:5173", # Vite default
+    "http://127.0.0.1:5173",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
