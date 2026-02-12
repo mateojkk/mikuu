@@ -19,7 +19,15 @@
       "destination": "backend/api/index.py"
     },
     {
-      "source": "/((?!assets/|favicon.svg|public/).*)",
+      "source": "/assets/(.*)",
+      "destination": "frontend/assets/$1"
+    },
+    {
+      "source": "/((?!api/).*\\.[a-z0-9]+)$",
+      "destination": "frontend/$1"
+    },
+    {
+      "source": "/((?!api/).*)",
       "destination": "frontend/index.html"
     }
   ]
