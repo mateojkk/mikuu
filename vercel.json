@@ -18,9 +18,6 @@
       "destination": "backend/api/index.py"
     },
     {
-      "handle": "filesystem"
-    },
-    {
       "source": "/(.*)",
       "destination": "frontend/index.html"
     }
