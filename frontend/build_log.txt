@@ -1,5 +1,0 @@
-
-> frontend@0.0.0 build
-> tsc -b && vite build
-
-src/components/Settings.tsx(1,31): error TS1484: 'FormEvent' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
