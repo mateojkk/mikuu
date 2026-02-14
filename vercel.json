@@ -23,7 +23,7 @@
       "destination": "/backend/api/index.py"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api|_next|assets|favicon|logo).*)",
       "destination": "/index.html"
     }
   ]
