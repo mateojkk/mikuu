@@ -47,43 +47,43 @@ function App() {
           style: { background: 'var(--bg-card)', color: 'var(--fg)', border: '1px solid var(--border)' } 
         }} 
       />
-      <header className="header-main" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <img src="/logo.svg" alt="payme" style={{ width: '36px', height: '36px' }} />
-          <div>
-            <h1 style={{ fontSize: '1.5rem', margin: 0, fontWeight: 900, letterSpacing: '-0.03em' }}>payme</h1>
-            <p style={{ color: 'var(--fg-secondary)', fontSize: '0.75rem', margin: 0, fontWeight: 500 }}>p2p payments on tempo</p>
+      <header className="header-main">
+        <div className="header-content">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <img src="/logo.svg" alt="payme" style={{ width: '40px', height: '40px' }} />
+            <div className="brand-mobile-hide">
+              <h1 style={{ fontSize: '1.5rem', margin: 0 }}>payme</h1>
+              <p style={{ color: 'var(--fg-secondary)', fontSize: '0.7rem', margin: 0, fontWeight: 600 }}>send money on tempo</p>
+            </div>
           </div>
-        </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          <nav style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <nav className="nav-tabs">
             <button 
-              className={`btn-secondary ${view === 'create' ? 'active' : ''}`}
+              className={`btn-nav ${view === 'create' ? 'active' : ''}`}
               onClick={() => navigateTo('create')}
             >
               <PlusCircle size={16} /> send
             </button>
             <button 
-              className={`btn-secondary ${view === 'multi' ? 'active' : ''}`}
+              className={`btn-nav ${view === 'multi' ? 'active' : ''}`}
               onClick={() => navigateTo('multi')}
             >
               <Send size={16} /> multi
             </button>
             <button 
-              className={`btn-secondary ${view === 'batch' ? 'active' : ''}`}
+              className={`btn-nav ${view === 'batch' ? 'active' : ''}`}
               onClick={() => navigateTo('batch')}
             >
               <Layers size={16} /> batch
             </button>
             <button 
-              className={`btn-secondary ${view === 'contacts' ? 'active' : ''}`}
+              className={`btn-nav ${view === 'contacts' ? 'active' : ''}`}
               onClick={() => navigateTo('contacts')}
             >
               <Users size={16} /> book
             </button>
             <button 
-              className={`btn-secondary ${view === 'history' ? 'active' : ''}`}
+              className={`btn-nav ${view === 'history' ? 'active' : ''}`}
               onClick={() => navigateTo('history')}
             >
               <History size={16} /> activity

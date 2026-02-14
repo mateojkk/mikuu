@@ -1,117 +1,114 @@
-# payme 💸
+# payme
 
-> send money to anyone on tempo — no wallet address needed.
+> send money to anyone on tempo.
 
-**payme** is a peer-to-peer payment app built on the **Tempo testnet**. it solves a real problem: sending crypto to someone shouldn't require copying a 42-character hex string. with payme, you can look up a friend by email or phone, generate a shareable payment link, or blast payments to multiple people at once.
+payme is a peer-to-peer payment app built on the Tempo testnet. send stablecoins to friends directly from your wallet, look up contacts by email or phone, or blast payments to multiple people at once.
 
-we built this for the **Canteen x Tempo Hackathon 2026**.
+built for the Canteen x Tempo Hackathon 2026.
 
 ## the problem
 
-sending crypto today sucks for normal people. you need to:
-- ask someone for their wallet address
-- copy-paste a long hex string and pray you didn't miss a character
-- send one transaction at a time, waiting for each to confirm
-- pay gas fees even when someone owes *you*
+sending crypto to another person is harder than it should be. you need their wallet address (a long hex string), you can only send one transaction at a time, and there's no easy way to tell someone "you owe me $20."
 
 ## what payme does
 
-- **send to email or phone** — look up contacts by email/phone number. if they're in your address book, it resolves to their wallet. if not, it generates a shareable payment link they can open in any browser.
-- **payment links + QR codes** — create an invoice, share the link or scan the QR. the payer connects their wallet and pays in one tap.
-- **multi-send** — pay multiple people at once. each transfer fires in parallel, with per-recipient status tracking (✓ confirmed, ✗ failed).
-- **batch send** — bundle multiple transfers into a single atomic transaction using Multicall3. all succeed or all fail. if Multicall3 isn't deployed, it gracefully falls back to parallel sends.
-- **address book** — save contacts with name, wallet, email, and phone. quick-select from your contacts when creating invoices.
-- **memos** — add a note to any payment. quick-tap emoji shortcuts (🍕 dinner, ☕ coffee, 🏠 rent) for common use cases.
+**send** - pick a friend from your address book (or paste their wallet), enter an amount, and transfer stablecoins directly on Tempo. the transfer happens on-chain in a few seconds.
+
+**request** - generate a payment link and share it. the other person opens it, connects their wallet, and pays. no back-and-forth needed.
+
+**multi-send** - send to multiple people at once. each transfer fires in parallel with live status tracking per recipient.
+
+**batch send** - bundle multiple transfers into one atomic transaction using Multicall3. everything succeeds or everything fails. if Multicall3 is not available on the chain, it falls back to parallel sends automatically.
+
+**contacts** - save your friends with their name, wallet address, email, and phone number. look up contacts by email or phone when sending payments.
+
+**memos** - attach a note to any payment. quick-tap shortcuts for common ones like dinner, coffee, rent.
 
 ## security
 
-this isn't a toy demo. we added real security patterns:
-
-- **wallet auth** — every mutating API call requires your wallet address in the `X-Wallet-Address` header. the backend validates it's a real ethereum-format address.
-- **ownership checks** — you can only delete your own invoices and contacts. trying to delete someone else's returns a 403.
-- **rate limiting** — 60 requests per minute per IP. prevents spam and abuse.
-- **input sanitization** — all wallet addresses are validated client-side (with live UI feedback) and server-side before any database or blockchain interaction.
-- **transaction simulation** — transfers are simulated before sending to catch reverts early.
+- wallet auth on every mutating API call (X-Wallet-Address header)
+- ownership checks on delete (you can only delete your own invoices and contacts)
+- rate limiting: 60 requests per minute per IP
+- address validation on both frontend and backend (0x + 40 hex characters)
+- transaction simulation before sending to catch reverts early
 
 ## tech stack
 
 | layer | tech |
 |-------|------|
-| **frontend** | react 19, vite, typescript, rainbowkit, wagmi, viem |
-| **backend** | python 3, fastapi, pydantic |
-| **database** | sqlite (local), postgresql/supabase (production) |
-| **chain** | tempo testnet — moderato (chain id `42431`) |
-| **deploy** | vercel (frontend static + python serverless) |
+| frontend | react 19, vite, typescript, rainbowkit, wagmi, viem |
+| backend | python 3, fastapi, pydantic |
+| database | sqlite locally, postgresql in production |
+| chain | tempo testnet, moderato, chain id 42431 |
+| deploy | vercel |
 
 ## running locally
 
-**backend:**
+backend:
 ```bash
 cd backend
 pip install -r requirements.txt
 python main.py
-# → http://localhost:8080
 ```
+runs on http://localhost:8080
 
-**frontend:**
+frontend:
 ```bash
 cd frontend
 npm install
 npm run dev
-# → http://localhost:5173
 ```
+runs on http://localhost:5173
 
 ## project layout
 
 ```
 backend/
-  main.py          # fastapi app + middleware wiring
-  routes.py        # invoice + contact CRUD with auth
-  middleware.py     # rate limiter + wallet auth
-  database.py      # sqlite/postgres with auto-migrations
-  models.py        # pydantic request validation
-  config.py        # env vars
+  main.py          - fastapi app + middleware
+  routes.py        - invoice and contact endpoints
+  middleware.py     - rate limiter + wallet auth
+  database.py      - sqlite/postgres with migrations
+  models.py        - pydantic request models
+  config.py        - env vars
 
 frontend/src/
-  App.tsx           # main app shell + routing
-  api.ts            # shared axios auth + address validation
+  App.tsx           - main shell + navigation
+  api.ts            - shared auth + address validation
   components/
-    InvoiceForm.tsx     # create invoices (wallet/email/phone)
-    PaymentPage.tsx     # pay an invoice on-chain
-    InvoiceHistory.tsx  # view + search past invoices
-    Contacts.tsx        # address book management
-    MultiSend.tsx       # parallel multi-recipient transfers
-    BatchSend.tsx       # atomic batch via multicall3
-    Receipt.tsx         # post-payment confirmation
+    InvoiceForm.tsx     - send or request payments
+    PaymentPage.tsx     - pay an invoice on-chain
+    InvoiceHistory.tsx  - past invoices + search
+    Contacts.tsx        - address book
+    MultiSend.tsx       - parallel multi-recipient transfers
+    BatchSend.tsx       - atomic batch via multicall3
+    Receipt.tsx         - post-payment receipt
 ```
 
 ## api
 
-| method | endpoint | auth | description |
-|--------|----------|------|-------------|
-| `POST` | `/api/invoices` | ✅ | create a new invoice |
-| `GET` | `/api/invoices` | — | list invoices (filter by wallet) |
-| `GET` | `/api/invoices/:id` | — | get invoice details |
-| `DELETE` | `/api/invoices/:id` | ✅ | delete invoice (owner only) |
-| `POST` | `/api/invoices/:id/pay` | ✅ | mark invoice as paid |
-| `GET` | `/api/contacts` | — | list contacts |
-| `GET` | `/api/contacts/lookup` | — | find contact by email/phone |
-| `POST` | `/api/contacts` | ✅ | add a contact |
-| `DELETE` | `/api/contacts/:id` | ✅ | delete contact (owner only) |
+| method | endpoint | auth required | what it does |
+|--------|----------|---------------|--------------|
+| POST | /api/invoices | yes | create invoice |
+| GET | /api/invoices | no | list invoices |
+| GET | /api/invoices/:id | no | get one invoice |
+| DELETE | /api/invoices/:id | yes | delete (owner only) |
+| POST | /api/invoices/:id/pay | yes | mark as paid |
+| GET | /api/contacts | no | list contacts |
+| GET | /api/contacts/lookup | no | find by email or phone |
+| POST | /api/contacts | yes | add contact |
+| DELETE | /api/contacts/:id | yes | delete (owner only) |
 
-## env vars
+## env
 
-create `backend/.env`:
-```env
+create backend/.env:
+```
 DB_PATH=payme.db
 FRONTEND_BASE_URL=http://localhost:5173
 TEMPO_CHAIN_ID=42431
 TEMPO_RPC_URL=https://rpc.moderato.tempo.xyz
 PORT=8080
-# for production:
-# DATABASE_URL=postgresql://...
 ```
 
 ---
 
-built for the **canteen x tempo hackathon 2026** by **MATEOINRL** ✌️
+built by MATEOINRL for the canteen x tempo hackathon 2026.
