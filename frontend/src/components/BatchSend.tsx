@@ -6,7 +6,7 @@ import { Abis } from 'viem/tempo';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { isValidAddress } from '../api';
-import { switchChain } from 'viem/actions';
+
 
 interface Recipient {
   id: string;
