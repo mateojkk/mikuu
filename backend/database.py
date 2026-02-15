@@ -10,8 +10,13 @@ from config import DB_PATH, DATABASE_URL
 def get_db():
     if DATABASE_URL:
         # PostgreSQL (Supabase)
+        # Fix: psycopg2 (and some other libs) occasionally prefer 'postgresql://' over 'postgres://'
+        url = DATABASE_URL
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql://", 1)
+            
         try:
-            conn = psycopg2.connect(DATABASE_URL, connect_timeout=10)
+            conn = psycopg2.connect(url, connect_timeout=10)
             yield conn
         except Exception as e:
             print(f"ERROR: Could not connect to PostgreSQL: {e}")

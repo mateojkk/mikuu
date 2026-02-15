@@ -1,4 +1,5 @@
 import uuid
+import os
 from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, Request
@@ -16,6 +17,33 @@ def get_cursor(conn):
     if DATABASE_URL:
         return conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     return conn.cursor()
+
+
+@router.get("/diagnostic")
+def diagnostic():
+    db_status = "not connected"
+    db_error = None
+    try:
+        with get_db() as conn:
+            cursor = get_cursor(conn)
+            cursor.execute("SELECT 1")
+            db_status = "connected"
+    except Exception as e:
+        db_error = str(e)
+
+    return {
+        "status": "online",
+        "database": {
+            "type": "PostgreSQL" if DATABASE_URL else "SQLite",
+            "connected": db_status == "connected",
+            "error": db_error,
+            "url_provided": bool(DATABASE_URL)
+        },
+        "environment": {
+            "vercel": bool(os.getenv("VERCEL")),
+            "frontend_base_url": FRONTEND_BASE_URL
+        }
+    }
 
 
 # ── invoices ──────────────────────────────────────────────
