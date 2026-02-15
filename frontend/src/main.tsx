@@ -1,5 +1,12 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+
+// Polyfills for Wagmi/Viem/WalletConnect in Vite environment
+if (typeof window !== 'undefined') {
+  (window as any).global = window;
+  (window as any).process = { env: {} };
+}
+
 import { RainbowKitProvider, getDefaultConfig, darkTheme } from "@rainbow-me/rainbowkit";
 import { WagmiProvider, http } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -7,7 +14,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import "./index.css";
 import App from "./App.tsx";
 
-const projectId = '13341d916db3579c966fe7d6852649be';
+const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '13341d916db3579c966fe7d6852649be';
 
 const tempoChain = {
   id: 42431,
@@ -46,9 +53,8 @@ createRoot(document.getElementById("root")!).render(
             accentColor: '#0052ff',
             accentColorForeground: 'white',
             borderRadius: 'medium', // Matches 16px radius
-            overlayBlur: 'small',
+          overlayBlur: 'small',
           })}
-          coolMode
         >
           <App />
         </RainbowKitProvider>

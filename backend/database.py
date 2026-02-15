@@ -98,7 +98,9 @@ def init_db():
     except Exception as e:
         print(f"Error initializing database: {e}")
         if not DATABASE_URL:
-            print("This is likely because the filesystem is read-only and no DATABASE_URL (Postgres) is provided.")
+            print("CRITICAL: DATABASE_URL (Postgres) is not set.")
+            print("Vercel's filesystem is read-only, so SQLite ('payme.db') will FAIL.")
+            print("Please set DATABASE_URL in your Vercel Environment Variables.")
 
 
 def row_to_dict(row) -> dict:

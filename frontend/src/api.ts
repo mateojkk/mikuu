@@ -11,12 +11,14 @@ export function isValidAddress(addr: string): boolean {
 }
 
 /**
- * Base URL for the API. In separate deployment, set VITE_API_URL in .env
+ * Base URL for the API. 
+ * Defaulting to '/api' allows the frontend and backend to work together 
+ * automatically when deployed as a single Vercel project.
  */
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 if (!import.meta.env.VITE_API_URL && import.meta.env.PROD) {
-  console.warn("WARNING: VITE_API_URL is not set. API calls will likely fail in separate deployment mode.");
+  console.info("[api] project is using relative '/api' path. ensure your deployment routes /api to the backend.");
 }
 
 /**
