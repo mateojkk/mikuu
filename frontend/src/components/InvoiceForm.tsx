@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Send, Loader2, Mail, Phone, Wallet, Link2 } from 'lucide-react';
-import axios from 'axios';
+
 import { useAccount, useWalletClient, useSwitchChain, usePublicClient } from 'wagmi';
 import { parseUnits } from 'viem';
 import { Abis } from 'viem/tempo';
 import { toast } from 'react-hot-toast';
-import { isValidAddress, authAxios } from '../api';
+import { isValidAddress, authAxios, baseApi } from '../api';
 
 interface InvoiceFormProps {
   onCreated: (id: string) => void;
@@ -45,7 +45,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ onCreated, prefillAddress }) 
 
   useEffect(() => {
     if (!address) return;
-    axios.get(`/api/contacts?wallet=${address}`)
+    baseApi.get(`/contacts?wallet=${address}`)
       .then(r => setContacts((r.data || []).map((c: any) => ({ name: c.name, address: c.address }))))
       .catch(() => {});
   }, [address]);
@@ -58,7 +58,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ onCreated, prefillAddress }) 
       if (recipientMode === 'email') params.set('email', lookupValue);
       else params.set('phone', lookupValue);
 
-      const resp = await axios.get(`/api/contacts/lookup?${params.toString()}`);
+      const resp = await baseApi.get(`/contacts/lookup?${params.toString()}`);
       if (resp.data.found) {
         setRecipientAddress(resp.data.contact.address);
         setResolvedName(resp.data.contact.name);
@@ -133,14 +133,14 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ onCreated, prefillAddress }) 
         // Also record this as a paid invoice in the backend
         try {
           const api = authAxios(address);
-          const inv = await api.post('/api/invoices', {
+          const inv = await api.post('/invoices', {
             merchantAddress: recipientAddress,
             amount: parseFloat(amount),
             tokenAddress,
             memo: memo || `sent $${amount}`,
             customerEmail: '',
           });
-          await api.post(`/api/invoices/${inv.data.id}/pay`, {
+          await api.post(`/invoices/${inv.data.id}/pay`, {
             txHash: hash,
             payerAddress: address,
           });
@@ -174,7 +174,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ onCreated, prefillAddress }) 
     setLoading(true);
     try {
       const api = authAxios(address);
-      const resp = await api.post('/api/invoices', {
+      const resp = await api.post('/invoices', {
         merchantAddress: address, // YOU receive the money
         customerEmail: recipientMode === 'email' ? lookupValue : '',
         amount: parseFloat(amount),

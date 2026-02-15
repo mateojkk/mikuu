@@ -1,9 +1,9 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { User, Plus, Trash2, Send, Search, Mail, Phone } from 'lucide-react';
 import { useAccount } from 'wagmi';
-import axios from 'axios';
+
 import { toast } from 'react-hot-toast';
-import { isValidAddress, authAxios } from '../api';
+import { isValidAddress, authAxios, baseApi } from '../api';
 
 interface Contact {
   id: string;
@@ -26,7 +26,7 @@ export default function Contacts({ onSelect }: { onSelect?: (contact: Contact) =
   const fetchContacts = async () => {
     if (!walletAddress) return;
     try {
-      const resp = await axios.get(`/api/contacts?wallet=${walletAddress}`);
+      const resp = await baseApi.get(`/contacts?wallet=${walletAddress}`);
       setContacts(resp.data || []);
     } catch (err) {
       console.error(err);
@@ -46,7 +46,7 @@ export default function Contacts({ onSelect }: { onSelect?: (contact: Contact) =
     }
     try {
       const api = authAxios(walletAddress);
-      await api.post('/api/contacts', {
+      await api.post('/contacts', {
         ownerWallet: walletAddress,
         name: newName,
         walletAddress: newAddress,
@@ -69,7 +69,7 @@ export default function Contacts({ onSelect }: { onSelect?: (contact: Contact) =
   const handleDelete = async (id: string) => {
     try {
       const api = authAxios(walletAddress);
-      await api.delete(`/api/contacts/${id}`);
+      await api.delete(`/contacts/${id}`);
       await fetchContacts();
       toast.success("contact removed");
     } catch (err) {

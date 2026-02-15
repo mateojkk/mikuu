@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, CheckCircle, Copy, Share2, Mail, Smartphone, Loader2 } from 'lucide-react';
-import axios from 'axios';
+
 import { QRCodeSVG } from 'qrcode.react';
 import { parseUnits } from 'viem';
 import { Abis } from 'viem/tempo';
 import { useAccount, useWalletClient, useSwitchChain, usePublicClient } from 'wagmi';
 import { toast } from 'react-hot-toast';
-import { authAxios } from '../api';
+import { authAxios, baseApi } from '../api';
 import Receipt from './Receipt';
 
 
@@ -40,7 +40,7 @@ export default function PaymentPage({ invoiceId, onBack }: { invoiceId: string, 
   useEffect(() => {
     const fetchInvoice = async () => {
       try {
-        const resp = await axios.get(`/api/invoices/${invoiceId}`);
+        const resp = await baseApi.get(`/invoices/${invoiceId}`);
         setInvoice(resp.data);
       } catch (err: any) {
         console.error(err);
@@ -159,7 +159,7 @@ export default function PaymentPage({ invoiceId, onBack }: { invoiceId: string, 
         setPayStatus('confirmed!');
         toast.success("payment successful!");
         try {
-          const resp = await authAxios(address).post(`/api/invoices/${invoiceId}/pay`, {
+          const resp = await authAxios(address).post(`/invoices/${invoiceId}/pay`, {
             txHash: hash,
             payerAddress: address,
           });
