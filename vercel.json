@@ -5,16 +5,8 @@
       "destination": "/api/index.py"
     },
     {
-      "source": "/assets/(.*)",
-      "destination": "/frontend/dist/assets/$1"
-    },
-    {
-      "source": "/favicon.svg",
-      "destination": "/frontend/dist/favicon.svg"
-    },
-    {
-      "source": "/logo.svg",
-      "destination": "/frontend/dist/logo.svg"
+      "source": "/(.*)",
+      "destination": "/frontend/dist/$1"
     },
     {
       "source": "/(.*)",
