@@ -40,8 +40,8 @@ createAppKit({
   metadata: {
     name: 'payme',
     description: 'send money on tempo',
-    url: 'https://payme-tempo.vercel.app', // origin must match your domain & subdomain
-    icons: ['https://payme-tempo.vercel.app/logo.svg']
+    url: typeof window !== 'undefined' ? window.location.origin : 'https://payme-tempo.vercel.app',
+    icons: [] // Removing non-existent icon to avoid loading issues
   },
   themeMode: 'dark',
   themeVariables: {

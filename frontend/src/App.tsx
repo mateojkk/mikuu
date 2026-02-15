@@ -19,6 +19,11 @@ function App() {
   void address; // used by ConnectButton internally
 
   useEffect(() => {
+    // Sanity check for environment variables in development/production
+    console.log(`[system] api base url: ${import.meta.env.VITE_API_URL || '/api'}`);
+  }, []);
+
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const invoiceId = params.get('invoiceId');
     if (invoiceId) {

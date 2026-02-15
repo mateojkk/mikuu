@@ -15,6 +15,10 @@ export function isValidAddress(addr: string): boolean {
  */
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
+if (!import.meta.env.VITE_API_URL && import.meta.env.PROD) {
+  console.warn("WARNING: VITE_API_URL is not set. API calls will likely fail in separate deployment mode.");
+}
+
 /**
  * Standard axios instance for non-authenticated calls
  */
@@ -43,6 +47,11 @@ export function getErrorMessage(err: any): string {
   if (err.response?.data?.detail) {
     if (typeof err.response.data.detail === 'string') return err.response.data.detail;
     if (Array.isArray(err.response.data.detail)) return err.response.data.detail[0]?.msg || 'validation error';
+  }
+  if (err.response?.status === 404) return "resource not found (404) - check your VITE_API_URL";
+  if (err.response?.status === 401) return "unauthorized - connect your wallet";
+  if (typeof err.response?.data === 'string' && err.response.data.startsWith('<!DOCTYPE')) {
+    return "received HTML instead of JSON - check your VITE_API_URL and backend routing";
   }
   return err.message || 'unknown error';
 }

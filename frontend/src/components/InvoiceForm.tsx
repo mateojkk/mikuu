@@ -5,7 +5,7 @@ import { useAccount, useWalletClient, useSwitchChain, usePublicClient } from 'wa
 import { parseUnits } from 'viem';
 import { Abis } from 'viem/tempo';
 import { toast } from 'react-hot-toast';
-import { isValidAddress, authAxios, baseApi } from '../api';
+import { isValidAddress, authAxios, baseApi, getErrorMessage } from '../api';
 
 interface InvoiceFormProps {
   onCreated: (id: string) => void;
@@ -184,8 +184,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({ onCreated, prefillAddress }) 
       toast.success('payment link created!');
       onCreated(resp.data.id);
     } catch (err: any) {
-      const detail = err.response?.data?.detail || 'failed to create request';
-      toast.error(detail);
+      toast.error(`failed to create request: ${getErrorMessage(err)}`);
     } finally {
       setLoading(false);
     }

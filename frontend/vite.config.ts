@@ -16,7 +16,9 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-             return 'vendor';
+            if (id.includes('@reown')) return 'vendor-reown';
+            if (id.includes('wagmi') || id.includes('viem') || id.includes('@tanstack')) return 'vendor-web3';
+            return 'vendor-base';
           }
         },
       },
