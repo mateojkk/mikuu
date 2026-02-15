@@ -23,8 +23,9 @@ const tempoChain = {
 
 const config = getDefaultConfig({
   appName: "payme",
-  projectId: "payme-tempo-p2p",
+  projectId: "13341d916db3579c966fe7d6852649be",
   chains: [tempoChain],
+  ssr: true, // If using Next.js/SSR, but good to have for consistency
   transports: {
     [tempoChain.id]: http("https://rpc.moderato.tempo.xyz"),
   },
