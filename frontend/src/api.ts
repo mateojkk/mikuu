@@ -50,10 +50,14 @@ export function getErrorMessage(err: any): string {
     if (typeof err.response.data.detail === 'string') return err.response.data.detail;
     if (Array.isArray(err.response.data.detail)) return err.response.data.detail[0]?.msg || 'validation error';
   }
-  if (err.response?.status === 404) return "resource not found (404) - check your VITE_API_URL";
-  if (err.response?.status === 401) return "unauthorized - connect your wallet";
+  if (err.response?.status === 404) return "resource not found (404) - check your routing/vercel.json";
+  if (err.response?.status === 401) return "unauthorized (401) - connect your wallet";
+  if (err.response?.status === 500) return `server error (500): ${err.response?.data?.message || err.response?.data || 'unknown'}`;
   if (typeof err.response?.data === 'string' && err.response.data.startsWith('<!DOCTYPE')) {
-    return "received HTML instead of JSON - check your VITE_API_URL and backend routing";
+    return "received HTML instead of JSON (likely Vercel 404 page) - check routing";
+  }
+  if (err.message === 'Network Error') {
+    return "Network Error: Check if backend is online and CORS is enabled if using a separate domain.";
   }
   return err.message || 'unknown error';
 }

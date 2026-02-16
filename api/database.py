@@ -106,7 +106,7 @@ def init_db():
         print(f"Error initializing database: {e}")
         if not DATABASE_URL:
             print("CRITICAL: DATABASE_URL (Postgres) is not set.")
-            print("Vercel's filesystem is read-only, so SQLite ('payme.db') will FAIL.")
+            print("Vercel's filesystem is read-only, so SQLite ('mikuu.db') will FAIL.")
             print("Please set DATABASE_URL in your Vercel Environment Variables.")
 
 

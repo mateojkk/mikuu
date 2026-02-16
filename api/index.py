@@ -19,7 +19,19 @@ try:
 except Exception as e:
     print(f"CRITICAL: Failed to initialize database: {e}")
 
-app = FastAPI(title="payme", version="1.0.0")
+app = FastAPI(title="mikuu", version="1.0.0")
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    # Log the full error to Vercel logs
+    print(f"ERROR: Global Exception Handler caught: {str(exc)}")
+    import traceback
+    traceback.print_exc()
+    return Response(
+        content=f"Internal Server Error: {str(exc)}",
+        status_code=500,
+        headers={"Access-Control-Allow-Origin": "*"}
+    )
 
 # Handle CORS via standard middleware below
 
@@ -44,16 +56,18 @@ app.add_middleware(RateLimitMiddleware, max_requests=60, window_seconds=60)
 # Wallet auth: require X-Wallet-Address on mutating requests
 app.add_middleware(WalletAuthMiddleware)
 
-app.include_router(router, prefix="/api")
+# We include the router WITHOUT the /api prefix because Vercel 
+# handles the /api mapping at the gateway level.
+app.include_router(router, prefix="")
 
 
 @app.get("/")
 def root():
     return {
         "status": "running",
-        "service": "payme-backend",
-        "version": "v2.1-FORCE-CORS",
-        "message": "CORS should now be fully open (*)"
+        "service": "mikuu-backend",
+        "version": "v3.0-PROD",
+        "message": "mikuu is confidential and ready"
     }
 
 
