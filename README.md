@@ -1,8 +1,8 @@
-# payme
+# mikuu
 
 > send money to anyone on tempo.
 
-payme is a peer-to-peer payment app built on the Tempo testnet. send stablecoins to friends directly from your wallet, look up contacts by email or phone, or blast payments to multiple people at once.
+mikuu is a peer-to-peer payment app built on the Tempo testnet. send stablecoins to friends directly from your wallet, look up contacts by email or phone, or blast payments to multiple people at once.
 
 built for the Canteen x Tempo Hackathon 2026.
 
